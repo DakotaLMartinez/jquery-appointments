@@ -1,6 +1,6 @@
-# Rails Appointments
+# jQuery Appointments
 
-A Rails app for keeping track of appointments, clients and multiple locations.  
+A Rails app with a jQuery front-end for keeping track of appointments, clients and multiple locations.  
 
 ### Features
 
