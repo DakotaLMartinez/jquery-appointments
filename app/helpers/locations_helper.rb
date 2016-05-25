@@ -1,10 +1,20 @@
 module LocationsHelper
   def show_street_address(location)
-    location.street_address if location.street_address
+    if location.street_address != "" && location.business_name != ""
+      content_tag(:p, location.street_address)       
+    end
+  end
+  
+  def show_business_name(location)
+    if location.business_name && location.business_name != ""
+      content_tag(:p, location.business_name) 
+    end
   end
   
   def city_state_zip(location)
-    "#{location.city}, #{location.state} #{location.zipcode}" if location.city && location.state && location.zipcode
+    if location.city && location.state && location.zipcode && location.city != "" && location.state != "" && location.zipcode != ""
+      content_tag(:p, "#{location.city}, #{location.state} #{location.zipcode}") 
+    end
   end
   
   def show_nickname(location)
@@ -16,7 +26,6 @@ module LocationsHelper
   end
   
   def show_address(location)
-    
     render partial: "locations/address", locals: { location: location }
   end
   
