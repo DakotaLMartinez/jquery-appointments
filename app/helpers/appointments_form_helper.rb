@@ -21,7 +21,7 @@ module AppointmentsFormHelper
     if appointment.appointment_time
       appointment.appointment_time.strftime("%m/%d/%Y")
     else
-      Time.now.strftime("%m/%d/%Y")
+      Time.zone.now.strftime("%m/%d/%Y")
     end
   end
   
@@ -104,9 +104,5 @@ module AppointmentsFormHelper
   def float_two_decimals(price)
     '%.2f' % price if price
   end
-  
-  # def parse_time(array)
-  #   DateTime.parse(array["date"] + " " + array["hour"] + ":" + array["min"])
-  # end
   
 end
