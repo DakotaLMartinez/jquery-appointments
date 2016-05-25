@@ -18,5 +18,10 @@
 <p>No locations yet.</p>
 <% end %>
 <div class="locations">
-  <%= render partial: "location_index", collection: @locations, as: :location %>  
+  
 </div>
+<script type="text/javascript" charset="utf-8">
+  $(function(){
+    getLocations();
+  })
+</script>

@@ -4,6 +4,10 @@ class LocationsController < ApplicationController
   
   def index 
     @locations = current_user.locations
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: @locations }
+    end
   end
   
   def client_list 
@@ -12,6 +16,10 @@ class LocationsController < ApplicationController
   
   def show 
     @appointments = @location.appointments
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @location }
+    end
   end
   
   def new 

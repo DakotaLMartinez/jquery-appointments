@@ -6,10 +6,24 @@ class AppointmentsController < ApplicationController
   before_action :set_location, only: [:index, :new, :edit]
     
   def index 
-    @upcoming_appointments = current_user.upcoming_appointments
+    
+    respond_to do |format|
+      format.html { 
+        @upcoming_appointments = current_user.upcoming_appointments    
+        render :index 
+      }
+      format.json { 
+        @appointments = current_user.appointments
+        render json: @appointments 
+      }
+    end
   end 
   
   def show 
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @appointment }
+    end
   end
   
   def new 

@@ -5,10 +5,18 @@ class ClientsController < ApplicationController
   def index 
     @clients = []
     @clients = current_user.clients if current_user
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: @clients }
+    end
   end
   
   def show 
     @appointments = @client.appointments
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @client }
+    end
   end
   
   def new 

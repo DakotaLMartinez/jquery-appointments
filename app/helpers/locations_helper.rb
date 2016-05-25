@@ -1,6 +1,6 @@
 module LocationsHelper
   def show_street_address(location)
-    if location.street_address != "" && location.business_name != ""
+    if location.street_address && location.street_address != ""
       content_tag(:p, location.street_address)       
     end
   end
