@@ -8,10 +8,12 @@ var Location = function(location) {
   this.businessName = location.business_name;
   this.appointments = location.appointments;
   this.clients = location.clients;
+  this.appointmentCount = location.appointment_count 
+  this.clientCount = location.client_count
 };
 
 Location.prototype.showPageLink = function(text) {
-  var output = '<a href="/locations/' + this.id + '">';
+  var output = '<a href="/locations/' + this.id + '" class="js-locations-show" id="location-' + this.id + '">';
     output += text;
   output += '</a>';
   return output;
@@ -32,11 +34,11 @@ Location.prototype.deleteLink = function() {
 }
 
 Location.prototype.clientListLink = function() {
-  var output = '<a href="/locations/' + this.id + '/client_list">';
-    if ( this.clients.length === 1 ) {
+  var output = '<a href="/locations/' + this.id + '/client_list" class="js-locations-client-list">';
+    if ( this.clientCount === 1 ) {
       output += "1 client";
     } else {
-      output += this.clients.length + ' clients';
+      output += this.clientCount + ' clients';
     }
   output += '</a>';
   return output;
@@ -44,10 +46,10 @@ Location.prototype.clientListLink = function() {
 
 Location.prototype.appointmentsLink = function() {
   var output = '';
-  if ( this.appointments.length === 1 ) {
+  if ( this.appointmentCount === 1 ) {
     output += this.showPageLink("1 appointment");
   } else {
-    var linkText = this.appointments.length + " appointments";
+    var linkText = this.appointmentCount + " appointments";
     output += this.showPageLink(linkText);
   }
   return output;
@@ -82,6 +84,35 @@ Location.prototype.showCityStateZip = function() {
   return output;
 }
 
+Location.prototype.buildAddress = function() {
+  var output = "";
+  output += this.showBusinessName();
+  output += this.showStreetAddress();
+  output += this.showCityStateZip();
+  return output;
+}
+
+window.buildLocationHeaders = function() {
+  var output = '<h1>';
+    output += 'Locations <a href="locations/new">+ New</a>';
+  output += '</h1>';
+  output += '<div class="row">';
+    output += '<div class="col-sm-3 hidden-xs">';
+      output += '<h3>Nickname</h3>';
+    output += '</div>';
+    output += '<div class="col-sm-3 hidden-xs">';
+      output += '<h3>Address</h3>';
+    output += '</div>';
+    output += '<div class="col-sm-3 hidden-xs">';
+      output += '<h3>Clients</h3>';
+    output += '</div>';
+    output += '<div class="col-sm-3 hidden-xs">';
+      output += '<h3>Appointments</h3>';
+    output += '</div>';
+  output += '</div>';
+  return output;
+}
+
 Location.prototype.buildLocationRow = function() {
   var output = '<div class="location row">';
     output += '<div class="col-sm-3">';
@@ -94,9 +125,7 @@ Location.prototype.buildLocationRow = function() {
       output += '</p>';
     output += '</div>';
     output += '<div class="col-sm-3">';
-      output += this.showBusinessName();
-      output += this.showStreetAddress();
-      output += this.showCityStateZip();
+      output += this.buildAddress();
     output += '</div>';
     output += '<div class="col-sm-3">';
       output += '<p>' + this.clientListLink() + '</p>';
@@ -109,15 +138,129 @@ Location.prototype.buildLocationRow = function() {
   return output;
 }
 
+Location.prototype.buildLocation = function() {
+  var output = '<h6 class="f2 normal"><a class="js-locations-index" href="/locations"><span style="position:relative; top:-0.1rem">&larr;</span> All Locations</a></h6>';
+  output += '<h1>Location</h1>';
+  output += '<h2>' + this.nickname + '</h2>';
+  output += this.buildAddress();
+  output += '<p>';
+    output += this.editPageLink();
+    output += this.deleteLink();
+  output += '</p>';
+  output += '<h1>Appointments <a href="/locations/' + this.id + '/appointments/new">+ New</a></h1>';
+  $.each(this.appointments, function(index, value){
+    output += '<div class="appointment">';
+      output += '<h4>';
+        output += '<a href="/appointments/' + value.id + '">' + value.client_name + '</a>';
+        output += ", " + value.time_string;
+      output += '</h4>';
+      output += '<a href="/appointments/' + value.id + 'edit">Edit</a>';
+      output += ', <a data-confirm="Are you sure you want to delete this appointment?" rel="nofollow" data-method="delete" href="/appointments/' + value.id + '">Delete</a>';
+    output += '</div>';
+  });
+  return output;
+}
+
+Location.prototype.buildClientList = function() {
+  var output = '<h6 class="f2 normal"><a class="js-locations-index" href="/locations"><span style="position:relative; top:-0.1rem">&larr;</span> All Locations</a></h6>';
+  output += '<h1>Client List</h1>';
+  output += '<h3>Location</h3>';
+  output += '<h5>';
+    output += '<a href="/locations/' + this.id + '" class="js-locations-show" id="location-' + this.id + '">' + this.nickname + '</a>';
+  output += '</h5>';
+  output += this.buildAddress();
+  output += '<h3>Clients</h3>';
+  output += '<ul>';
+    $.each(this.clients, function(index, value){
+      output += '<li>';
+        output += '<a href="/clients/' + value.id + '">' + value.name + '</a>';
+      output += '</li>';
+    });
+  output += '</ul>';
+  return output;
+}
+
+///////////////////////////
+// Event Listeners
+///////////////////////////
+$(function(){
+  var attachListeners = function() {
+    $(".js-locations-show").on("click", function(event){
+      event.preventDefault();
+      var id = $(this).attr("id").split("-")[1];
+      getLocation(id);
+      window.setTimeout(attachListeners, 500);
+    });
+    $(".js-locations-index").on("click", function(event){
+      event.preventDefault();
+      getLocations();
+      window.setTimeout(attachListeners, 500);
+    });
+    $('.js-locations-client-list').on("click", function(event){
+      event.preventDefault();
+      var id = $(this).attr("href").split("/")[2];
+      console.log(id);
+      getClientList(id);
+      window.setTimeout(attachListeners, 500);
+    })
+    
+  }
+  attachListeners();
+  
+  $(document).on("click", function(){
+    setTimeout(attachListeners, 500);
+    setTimeout(attachListeners, 4000);
+  });
+  
+  $('form#new_location').submit(function(event){
+    event.preventDefault();
+    
+    var values = $(this).serialize();
+    
+    createLocation(values);
+  });
+  
+});
+///////////////////////////
+// AJAX Calls
+///////////////////////////
 
 window.getLocations = function (){
   $.get('/locations.json').done(function(data){
-    var locations = '';
-    $.each(data, function(index, value){
-      var location = new Location(data[index]);
-      locations += location.buildLocationRow();
-    });
-    $('.locations').html(locations);
+    var locations = buildLocationHeaders();
+    locations += '<div class="locations">';
+      $.each(data, function(index, value){
+        var location = new Location(data[index]);
+        locations += location.buildLocationRow();
+      });
+    locations += '</div>';
+    $('.main').html(locations);
     console.log(locations);
+  });
+}
+
+window.getLocation = function(id) {
+  $.get('/locations/'+ id + '.json').done(function(data){
+    var location = new Location(data);
+    html = location.buildLocation();
+    $('.main').html(html);
+  });
+}
+
+window.getClientList = function(id) {
+  $.get('/locations/'+ id + '.json').done(function(data){
+    var location = new Location(data);
+    html = location.buildClientList();
+    $('.main').html(html);
+  });
+}
+
+window.createLocation = function(values) {
+  var posting = $.post('/locations', values);
+  
+  posting.done(function(data){
+    var location = new Location(data);
+    var response = location.buildLocation();
+    $('.main').html(response);
   });
 }

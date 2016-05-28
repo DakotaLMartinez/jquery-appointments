@@ -6,7 +6,7 @@ class LocationsController < ApplicationController
     @locations = current_user.locations
     respond_to do |format|
       format.html { render :index }
-      format.json { render json: @locations }
+      format.json { render json: @locations, each_serializer: SimpleLocationSerializer }
     end
   end
   
@@ -18,7 +18,7 @@ class LocationsController < ApplicationController
     @appointments = @location.appointments
     respond_to do |format|
       format.html { render :show }
-      format.json { render json: @location }
+      format.json { render json: @location, serializer: CompleteLocationSerializer }
     end
   end
   
@@ -31,7 +31,11 @@ class LocationsController < ApplicationController
     if @location.valid?
       @location.user = current_user
       @location.save 
-      redirect_to locations_path
+      # respond_to do |format|
+      #   format.html { redirect_to locations_path }
+      #   format.json { render json: @location, status: 201 }
+      # end
+      render json: @location, status: 201, serializer: CompleteLocationSerializer
     else 
       render :new
     end

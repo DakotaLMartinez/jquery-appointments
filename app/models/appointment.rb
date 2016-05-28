@@ -14,6 +14,18 @@ class Appointment < ActiveRecord::Base
     appointment_time + duration.seconds
   end
   
+  def time_string 
+    start_time.strftime("%A %B %e, %l:%M %p -") + end_time.strftime("%l:%M %p")
+  end
+  
+  def start_time_string 
+    start_time.strftime("%l:%M %p").strip
+  end
+  
+  def end_time_string 
+    end_time.strftime("%l:%M %p").strip
+  end
+  
   def client_name 
     client.name
   end

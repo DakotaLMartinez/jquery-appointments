@@ -21,7 +21,7 @@ module LocationsHelper
     if current_page?(location_path(location))
       location.nickname
     else 
-      link_to location.nickname, location_path(location)
+      link_to location.nickname, location_path(location), class: "js-locations-show", id: "location-#{location.id}"
     end
   end
   
@@ -42,7 +42,7 @@ module LocationsHelper
   end
   
   def client_count(location)
-    link_to pluralize(location.client_count, 'client'), client_list_path(location)
+    link_to pluralize(location.client_count, 'client'), client_list_path(location), class: "js-locations-client-list"
   end
   
   

@@ -1,5 +1,5 @@
 class AppointmentSerializer < ActiveModel::Serializer
-  attributes :id, :appointment_time, :duration, :price
+  attributes :id, :time_string, :duration, :price, :client_name
   has_one :location, serializer: AppointmentLocationSerializer
-  has_one :client
+  has_one :client, serializer: AppointmentClientSerializer
 end

@@ -15,6 +15,7 @@ gem 'bootstrap_form'
 
 gem 'simple_calendar', '~> 2.0'
 gem 'active_model_serializers'
+gem 'tachyons-rails'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
