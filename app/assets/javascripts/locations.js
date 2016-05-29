@@ -92,7 +92,7 @@ Location.prototype.buildAddress = function() {
   return output;
 }
 
-window.buildLocationHeaders = function() {
+var buildLocationHeaders = function() {
   var output = '<h1>';
     output += 'Locations <a href="locations/new">+ New</a>';
   output += '</h1>';
@@ -138,8 +138,13 @@ Location.prototype.buildLocationRow = function() {
   return output;
 }
 
-Location.prototype.buildLocation = function() {
-  var output = '<h6 class="f2 normal"><a class="js-locations-index" href="/locations"><span style="position:relative; top:-0.1rem">&larr;</span> All Locations</a></h6>';
+Location.prototype.buildLocation = function(options) {
+  var output = '';
+  if (options && options.skipIndexLink === true ) {
+    output = '';
+  } else {
+    output += '<h6 class="f2 normal"><a class="js-locations-index" href="/locations"><span style="position:relative; top:-0.1rem">&larr;</span> All Locations</a></h6>';
+  }
   output += '<h1>Location</h1>';
   output += '<h2>' + this.nickname + '</h2>';
   output += this.buildAddress();
@@ -183,34 +188,32 @@ Location.prototype.buildClientList = function() {
 ///////////////////////////
 // Event Listeners
 ///////////////////////////
-$(function(){
-  var attachListeners = function() {
-    $(".js-locations-show").on("click", function(event){
-      event.preventDefault();
-      var id = $(this).attr("id").split("-")[1];
-      getLocation(id);
-      window.setTimeout(attachListeners, 500);
-    });
-    $(".js-locations-index").on("click", function(event){
-      event.preventDefault();
-      getLocations();
-      window.setTimeout(attachListeners, 500);
-    });
-    $('.js-locations-client-list').on("click", function(event){
-      event.preventDefault();
-      var id = $(this).attr("href").split("/")[2];
-      console.log(id);
-      getClientList(id);
-      window.setTimeout(attachListeners, 500);
-    })
-    
-  }
-  attachListeners();
-  
-  $(document).on("click", function(){
-    setTimeout(attachListeners, 500);
-    setTimeout(attachListeners, 4000);
+var attachListeners = function() {
+  $('.js-locations-show').on('click', function(event){
+    event.preventDefault();
+    var id = $(this).attr('id').split('-')[1];
+    getLocation(id);
   });
+  $('.js-locations-index').on('click', function(event){
+    event.preventDefault();
+    getLocations();
+  });
+  $('.js-locations-client-list').on('click', function(event){
+    event.preventDefault();
+    var id = $(this).attr('href').split('/')[2];
+    getClientList(id);
+  })
+  $('form.edit_location').submit(function(event){
+    event.preventDefault();
+    
+    var values = $(this).serialize();
+    var id = $(this).attr('id').split('_')[2];
+  
+    updateLocation(id, values);
+  });
+}
+$(function(){
+  attachListeners();
   
   $('form#new_location').submit(function(event){
     event.preventDefault();
@@ -225,7 +228,7 @@ $(function(){
 // AJAX Calls
 ///////////////////////////
 
-window.getLocations = function (){
+var getLocations = function (){
   $.get('/locations.json').done(function(data){
     var locations = buildLocationHeaders();
     locations += '<div class="locations">';
@@ -235,32 +238,51 @@ window.getLocations = function (){
       });
     locations += '</div>';
     $('.main').html(locations);
-    console.log(locations);
+    attachListeners();
   });
 }
 
-window.getLocation = function(id) {
+var getLocation = function(id) {
   $.get('/locations/'+ id + '.json').done(function(data){
     var location = new Location(data);
     html = location.buildLocation();
     $('.main').html(html);
+    attachListeners();
   });
 }
 
-window.getClientList = function(id) {
+var getClientList = function(id) {
   $.get('/locations/'+ id + '.json').done(function(data){
     var location = new Location(data);
     html = location.buildClientList();
     $('.main').html(html);
+    attachListeners();
   });
 }
 
-window.createLocation = function(values) {
+var createLocation = function(values) {
   var posting = $.post('/locations', values);
   
   posting.done(function(data){
     var location = new Location(data);
-    var response = location.buildLocation();
+    var response = location.buildLocation({skipIndexLink: true});
     $('.main').html(response);
+    attachListeners();
+  });
+}
+
+var updateLocation = function(id, values) {
+  var url = '/locations/' + id;
+  var patching = $.ajax({
+    url: url,
+    type: 'PATCH',
+    data: values,
+    dataType: 'JSON',
+    success: function(data) {
+      var location = new Location(data);
+      var response = location.buildLocation({skipIndexLink: true});
+      $('.main').html(response);
+      attachListeners();
+    }
   });
 }

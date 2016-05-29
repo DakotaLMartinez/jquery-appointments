@@ -46,7 +46,10 @@ class LocationsController < ApplicationController
   
   def update 
     if @location.update(location_params)
-      redirect_to location_path(@location)
+      respond_to do |format|
+        format.html { redirect_to location_path(@location) }
+        format.json { render json: @location }
+      end
     else 
       render :edit
     end
