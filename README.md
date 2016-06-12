@@ -13,7 +13,7 @@ A Rails app with a jQuery front-end for keeping track of appointments, clients a
 
 
 ```
-cd rails-appointments
+cd jquery-appointments
 bundle install
 ```
 
