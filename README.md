@@ -125,16 +125,16 @@ rake db:migrate
 
 In order to get the Facebook Login working correctly, you'll need to complete the following steps:
 
-1. Create an application in the [Facebook Developer Console](https://developer.facebook.com/) and go to the settings part of the Dashboard (skip quick setup) 
-2. At the top of the **Basic** tab, you'll see the name of the app, the API version, the **App ID**, and the **App Secret**.  You'll want to add the App ID and the App Secret to the `.env` file in your project, like so... In the root of your project, run `nano .env`, and add the following:
+- Create an application in the [Facebook Developer Console](https://developer.facebook.com/) and go to the settings part of the Dashboard (skip quick setup) 
+- At the top of the **Basic** tab, you'll see the name of the app, the API version, the **App ID**, and the **App Secret**.  You'll want to add the App ID and the App Secret to the `.env` file in your project, like so... In the root of your project, run `nano .env`, and add the following:
 ```
 FACEBOOK_KEY="App ID here"
 FACEBOOK_SECRET="App Secret here"
 ```
 Press `CTRL + O` to save, hit return to save the file as `.env`, press `CTRL + X` to exit nano.
-1. Drop into your `rails console` to make sure you've got them hooked up: run `ENV["FACEBOOK_KEY"]` and you should see your App ID **NOTE:** If this isn't working, make sure that you have the `gem 'dotenv-rails, groups: [:development, :test]` in your Gemfile **beneath** `gem rails`.
-2. **Before making any commits:** Make sure you that you have `.env` in your `.gitignore` file.
-3. Click on the **Advanced** Tab and scroll down to the section labeled **Client OAuth Settings** and find the filed labeled **Valid OAuth Redirect URLs**.  You'll want to add `http://localhost:3000/users/auth/facebook/callback`.
+- Drop into your `rails console` to make sure you've got them hooked up: run `ENV["FACEBOOK_KEY"]` and you should see your App ID **NOTE:** If this isn't working, make sure that you have the `gem 'dotenv-rails, groups: [:development, :test]` in your Gemfile **beneath** `gem rails`.
+- **Before making any commits:** Make sure you that you have `.env` in your `.gitignore` file.
+- Click on the **Advanced** Tab and scroll down to the section labeled **Client OAuth Settings** and find the filed labeled **Valid OAuth Redirect URLs**.  You'll want to add `http://localhost:3000/users/auth/facebook/callback`.
 
 Now you should be able to run 
 ```
