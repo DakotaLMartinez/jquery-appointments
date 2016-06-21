@@ -35,7 +35,6 @@ class LocationsController < ApplicationController
         format.html { redirect_to locations_path }
         format.json { render json: @location, status: 201 }
       end
-      render json: @location, status: 201, serializer: CompleteLocationSerializer
     else 
       render :new
     end

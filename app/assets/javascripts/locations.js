@@ -245,7 +245,7 @@ var getLocations = function (){
 var getLocation = function(id) {
   $.get('/locations/'+ id + '.json').done(function(data){
     var location = new Location(data);
-    html = location.buildLocation();
+    var html = location.buildLocation();
     $('.main').html(html);
   });
 }
@@ -259,18 +259,22 @@ var getClientList = function(id) {
 }
 
 var createLocation = function(values) {
-  var posting = $.post('/locations', values);
-  
-  posting.done(function(data){
-    var location = new Location(data);
-    var response = location.buildLocation({skipIndexLink: true});
-    $('.main').html(response);
+  $.ajax({
+    url: '/locations.json', 
+    type: 'POST', 
+    data: values, 
+    dataType: 'JSON',
+    success: function(data) {
+      var location = new Location(data);
+      var response = location.buildLocation({skipIndexLink: true});
+      $('.main').html(response);
+    }
   });
 }
 
 var updateLocation = function(id, values) {
   var url = '/locations/' + id;
-  var patching = $.ajax({
+  $.ajax({
     url: url,
     type: 'PATCH',
     data: values,
