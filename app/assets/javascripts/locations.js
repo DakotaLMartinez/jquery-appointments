@@ -188,22 +188,31 @@ Location.prototype.buildClientList = function() {
 ///////////////////////////
 // Event Listeners
 ///////////////////////////
+
 var attachListeners = function() {
-  $('.js-locations-show').on('click', function(event){
+  $(document).on('click', '.js-locations-show', function(event){
     event.preventDefault();
     var id = $(this).attr('id').split('-')[1];
     getLocation(id);
   });
-  $('.js-locations-index').on('click', function(event){
+  $(document).on('click', '.js-locations-index', function(event){
     event.preventDefault();
     getLocations();
   });
-  $('.js-locations-client-list').on('click', function(event){
+  $(document).on('click', '.js-locations-client-list', function(event){
     event.preventDefault();
     var id = $(this).attr('href').split('/')[2];
     getClientList(id);
   })
-  $('form.edit_location').submit(function(event){
+  $(document).on('submit', 'form#new_location', function(event){
+    event.preventDefault();
+    
+    var values = $(this).serialize();
+    
+    createLocation(values);
+  });
+  
+  $(document).on('submit', '.edit_location', function(event){
     event.preventDefault();
     
     var values = $(this).serialize();
@@ -214,16 +223,8 @@ var attachListeners = function() {
 }
 $(function(){
   attachListeners();
-  
-  $('form#new_location').submit(function(event){
-    event.preventDefault();
-    
-    var values = $(this).serialize();
-    
-    createLocation(values);
-  });
-  
-});
+})
+
 ///////////////////////////
 // AJAX Calls
 ///////////////////////////
@@ -238,7 +239,6 @@ var getLocations = function (){
       });
     locations += '</div>';
     $('.main').html(locations);
-    attachListeners();
   });
 }
 
@@ -247,7 +247,6 @@ var getLocation = function(id) {
     var location = new Location(data);
     html = location.buildLocation();
     $('.main').html(html);
-    attachListeners();
   });
 }
 
@@ -256,7 +255,6 @@ var getClientList = function(id) {
     var location = new Location(data);
     html = location.buildClientList();
     $('.main').html(html);
-    attachListeners();
   });
 }
 
@@ -267,7 +265,6 @@ var createLocation = function(values) {
     var location = new Location(data);
     var response = location.buildLocation({skipIndexLink: true});
     $('.main').html(response);
-    attachListeners();
   });
 }
 
@@ -282,7 +279,6 @@ var updateLocation = function(id, values) {
       var location = new Location(data);
       var response = location.buildLocation({skipIndexLink: true});
       $('.main').html(response);
-      attachListeners();
     }
   });
 }
